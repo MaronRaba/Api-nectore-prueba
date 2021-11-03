@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 
 namespace Test3.Models
 {
-    public class User
+    public class Todo
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public string Nombre { get; set; }
+        public string Completado { get; set; }
 
     }
 }

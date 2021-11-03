@@ -25,10 +25,10 @@ namespace Test3.Controllers
         public JsonResult Get()
         {
             string query = @"
-                        SELECT * FROM `usuarios`";
+                        SELECT * FROM `todos`";
 
             DataTable table = new DataTable();
-            string sqlDataSource = _configuration.GetConnectionString("UserAppCon");
+            string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
             MySqlDataReader myReader;
             using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
             {
@@ -48,22 +48,21 @@ namespace Test3.Controllers
         }
 
         [HttpPost]
-        public JsonResult Post(User user)
+        public JsonResult Post(Todo todo)
         {
             string query = @"
-                       INSERT INTO `usuarios`(Nombre, NombreDeUsuario, Contrasenia) values (@Nombre, @NombreDeUsuario, @Contrasenia);";
+                       INSERT INTO `todos`(Nombre, Completado) values (@Nombre, @Estado);";
 
             DataTable table = new DataTable();
-            string sqlDataSource = _configuration.GetConnectionString("UserAppCon");
+            string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
             MySqlDataReader myReader;
             using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
             {
                 mycon.Open();
                 using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
                 {
-                    myCommand.Parameters.AddWithValue("@Nombre", user.Name);
-                    myCommand.Parameters.AddWithValue("@NombreDeUsuario", user.UserName);
-                    myCommand.Parameters.AddWithValue("@Contrasenia", user.Password);
+                    myCommand.Parameters.AddWithValue("@Nombre", todo.Nombre);
+                    myCommand.Parameters.AddWithValue("@Estado", false);
 
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
@@ -78,27 +77,25 @@ namespace Test3.Controllers
         }
 
         [HttpPut]
-        public JsonResult Put(User user)
+        public JsonResult Put(Todo todo)
         {
             string query = @"
-                       update `usuarios` set
+                       update `todos` set
                       Nombre = @Nombre,
-                        NombreDeUsuario = @NombreDeUsuario,
-                        Contrasenia = @Contrasenia
-                        where Id_Usuarios =@Id_Usuarios;";
+                        Estado = @Estado
+                        where Id_todo =@Id_todo;";
 
             DataTable table = new DataTable();
-            string sqlDataSource = _configuration.GetConnectionString("UserAppCon");
+            string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
             MySqlDataReader myReader;
             using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
             {
                 mycon.Open();
                 using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
                 {
-                    myCommand.Parameters.AddWithValue("@Nombre", user.Name);
-                    myCommand.Parameters.AddWithValue("@NombreDeUsuario", user.UserName);
-                    myCommand.Parameters.AddWithValue("@Contrasenia", user.Password);
-                    myCommand.Parameters.AddWithValue("@Id_Usuarios", user.Id);
+                    myCommand.Parameters.AddWithValue("@Nombre", todo.Nombre);
+                    myCommand.Parameters.AddWithValue("@NombreDeUsuario", todo.Completado);
+                    myCommand.Parameters.AddWithValue("@Id_todo", todo.Id);
 
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
@@ -117,18 +114,18 @@ namespace Test3.Controllers
         public JsonResult Delete(int id)
         {
             string query = @"
-                       delete from `usuarios`
-                        where Id_Usuarios =@Id_Usuarios;";
+                       delete from `todos`
+                        where Id_todo =@Id_todo;";
 
             DataTable table = new DataTable();
-            string sqlDataSource = _configuration.GetConnectionString("UserAppCon");
+            string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
             MySqlDataReader myReader;
             using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
             {
                 mycon.Open();
                 using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
                 {
-                    myCommand.Parameters.AddWithValue("@Id_Usuarios", id);
+                    myCommand.Parameters.AddWithValue("@Id_todo", id);
 
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
@@ -142,7 +139,7 @@ namespace Test3.Controllers
 
         }
 
-        [HttpGet("{id}")]
+        /*[HttpGet("{id}")]
         public JsonResult GetId(int id)
         {
             string query = @"
@@ -165,9 +162,6 @@ namespace Test3.Controllers
             }
 
             return new JsonResult(table);
-
-
-
-        }
+        }*/
     }
 }
