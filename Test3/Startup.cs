@@ -25,7 +25,7 @@ namespace Test3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //CONS
+            //CORS
             services.AddCors(c =>
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -37,13 +37,28 @@ namespace Test3
                 .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             services.AddControllers();
+
+            var proveedor = services.BuildServiceProvider();
+            var config = proveedor.GetRequiredService<IConfiguration>();
+
+            services.AddCors(opciones =>
+            {
+                var frontendURL = Configuration.GetValue<string>("frontend_url");
+
+                opciones.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //CONS
+            //CORS
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseCors();
 
             if (env.IsDevelopment())
             {

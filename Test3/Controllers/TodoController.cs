@@ -13,10 +13,10 @@ namespace Test3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class TodoController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public UserController(IConfiguration configuration)
+        public TodoController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -82,7 +82,7 @@ namespace Test3.Controllers
             string query = @"
                        update `todos` set
                       Nombre = @Nombre,
-                        Estado = @Estado
+                        Completado = @Completado
                         where Id_todo =@Id_todo;";
 
             DataTable table = new DataTable();
@@ -94,7 +94,7 @@ namespace Test3.Controllers
                 using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
                 {
                     myCommand.Parameters.AddWithValue("@Nombre", todo.Nombre);
-                    myCommand.Parameters.AddWithValue("@NombreDeUsuario", todo.Completado);
+                    myCommand.Parameters.AddWithValue("@Completado", todo.Completado);
                     myCommand.Parameters.AddWithValue("@Id_todo", todo.Id);
 
                     myReader = myCommand.ExecuteReader();
