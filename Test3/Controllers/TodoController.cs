@@ -51,7 +51,7 @@ namespace Test3.Controllers
         public JsonResult GetLastId()
         {
             string query = @"
-                        SELECT Id_todo FROM 'todos' ORDER BY Id_todo DESC LIMIT 1;";
+                        SELECT MAX(Id_todo) FROM todos;";
 
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
