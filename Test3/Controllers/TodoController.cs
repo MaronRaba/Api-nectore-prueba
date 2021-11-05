@@ -47,6 +47,33 @@ namespace Test3.Controllers
 
         }
 
+        [HttpGet("lastId")]
+        public JsonResult GetLastId()
+        {
+            string query = @"
+                        SELECT Id_todo FROM 'todos' ORDER BY Id_todo DESC LIMIT 1;";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
+            MySqlDataReader myReader;
+            using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
+            {
+                mycon.Open();
+                using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    mycon.Close();
+                }
+            }
+
+            return new JsonResult(table);
+
+        }
+
+
         [HttpPost]
         public JsonResult Post(Todo todo)
         {
@@ -72,17 +99,16 @@ namespace Test3.Controllers
                 }
             }
 
-            return new JsonResult("Added Successfully");
+            return new JsonResult("Todo agregado");
 
         }
 
-        [HttpPut]
-        public JsonResult Put(Todo todo)
+        [HttpPut("nombre")]
+        public JsonResult PutNombre(Todo todo)
         {
             string query = @"
                        update `todos` set
-                      Nombre = @Nombre,
-                        Completado = @Completado
+                      Nombre = @Nombre
                         where Id_todo =@Id_todo;";
 
             DataTable table = new DataTable();
@@ -94,6 +120,36 @@ namespace Test3.Controllers
                 using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
                 {
                     myCommand.Parameters.AddWithValue("@Nombre", todo.Nombre);
+                    myCommand.Parameters.AddWithValue("@Id_todo", todo.Id);
+
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    mycon.Close();
+                }
+            }
+
+            return new JsonResult("Nombre cambiado exitosmente");
+
+        }
+
+        [HttpPut("completado")]
+        public JsonResult PutCompletado(Todo todo)
+        {
+            string query = @"
+                       update `todos` set
+                      Completado = @Completado
+                        where Id_todo =@Id_todo;";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("TodoAppCon");
+            MySqlDataReader myReader;
+            using (MySqlConnection mycon = new MySqlConnection(sqlDataSource))
+            {
+                mycon.Open();
+                using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
+                {
                     myCommand.Parameters.AddWithValue("@Completado", todo.Completado);
                     myCommand.Parameters.AddWithValue("@Id_todo", todo.Id);
 
@@ -105,13 +161,13 @@ namespace Test3.Controllers
                 }
             }
 
-            return new JsonResult("Updated Successfully");
+            return new JsonResult("Estado cambiado exitosamente");
 
         }
 
 
-        [HttpDelete("{id}")]
-        public JsonResult Delete(int id)
+        [HttpDelete]
+        public JsonResult Delete(Todo todo)
         {
             string query = @"
                        delete from `todos`
@@ -125,7 +181,7 @@ namespace Test3.Controllers
                 mycon.Open();
                 using (MySqlCommand myCommand = new MySqlCommand(query, mycon))
                 {
-                    myCommand.Parameters.AddWithValue("@Id_todo", id);
+                    myCommand.Parameters.AddWithValue("@Id_todo", todo.Id);
 
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
